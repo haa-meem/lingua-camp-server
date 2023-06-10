@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 require('dotenv').config();
-const jwt=require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const port = process.env.PORT || 5000;
 
 //middleware
@@ -31,6 +31,12 @@ async function run() {
         const instructorsCollection = client.db("linguaDb").collection("instructors");
         const classesCollection = client.db("linguaDb").collection("classes");
         const enrolledCollection = client.db("linguaDb").collection("enrolled");
+
+        app.post('/jwt', (req, res) => {
+            const user = req.body;
+            const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
+            res.send({ token })
+        })
 
         //users api
         app.get('/users', async (req, res) => {
