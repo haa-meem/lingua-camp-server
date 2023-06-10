@@ -27,7 +27,8 @@ async function run() {
         await client.connect();
 
         const instructorsCollection = client.db("linguaDb").collection("instructors");
-        const classesCollection=client.db("linguaDb").collection("classes");
+        const classesCollection = client.db("linguaDb").collection("classes");
+        const enrolledCollection = client.db("linguaDb").collection("enrolled");
 
         app.get('/instructors', async (req, res) => {
             const result = await instructorsCollection.find().toArray();
@@ -36,6 +37,24 @@ async function run() {
 
         app.get('/classes', async (req, res) => {
             const result = await classesCollection.find().toArray();
+            res.send(result);
+        })
+
+        //enrolled collection
+        app.get('/enrolled', async (req, res) => {
+            const email = req.query.email;
+            if (!email) {
+                res.send(result);
+            }
+            const query = { email: email };
+            const result = await enrolledCollection.find(query).toArray();
+            res.send(result);
+        })
+
+        app.post('/enrolled', async (req, res) => {
+            const classItem = req.body;
+            console.log(classItem);
+            const result = await enrolledCollection.insertOne(classItem);
             res.send(result);
         })
 
