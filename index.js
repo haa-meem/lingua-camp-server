@@ -26,15 +26,25 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
 
+        const usersCollection = client.db("linguaDb").collection("users");
         const instructorsCollection = client.db("linguaDb").collection("instructors");
         const classesCollection = client.db("linguaDb").collection("classes");
         const enrolledCollection = client.db("linguaDb").collection("enrolled");
 
+        //users api
+        app.post('/users',async(req,res)=>{
+            const user=req.body;
+            const result=await usersCollection.insertOne(user);
+            res.send(result);
+        })
+
+        //instructors api
         app.get('/instructors', async (req, res) => {
             const result = await instructorsCollection.find().toArray();
             res.send(result);
         })
 
+        //classes api
         app.get('/classes', async (req, res) => {
             const result = await classesCollection.find().toArray();
             res.send(result);
