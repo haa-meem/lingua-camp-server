@@ -45,7 +45,7 @@ async function run() {
         const usersCollection = client.db("linguaDb").collection("users");
         const instructorsCollection = client.db("linguaDb").collection("instructors");
         const classesCollection = client.db("linguaDb").collection("classes");
-        const enrolledCollection = client.db("linguaDb").collection("enrolled");
+        const selectedClassesCollection = client.db("linguaDb").collection("selectedClasses");
 
         app.post('/jwt', (req, res) => {
             const user = req.body;
@@ -119,8 +119,8 @@ async function run() {
             res.send(result);
         })
 
-        //enrolled collection
-        app.get('/enrolled', verifyJWT, async (req, res) => {
+        //selected classes collection
+        app.get('/selectedClasses', verifyJWT, async (req, res) => {
             const email = req.query.email;
             if (!email) {
                 res.send(result);
@@ -132,21 +132,21 @@ async function run() {
             }
 
             const query = { email: email };
-            const result = await enrolledCollection.find(query).toArray();
+            const result = await selectedClassesCollection.find(query).toArray();
             res.send(result);
         })
 
-        app.post('/enrolled', async (req, res) => {
+        app.post('/selectedClasses', async (req, res) => {
             const classItem = req.body;
             console.log(classItem);
-            const result = await enrolledCollection.insertOne(classItem);
+            const result = await selectedClassesCollection.insertOne(classItem);
             res.send(result);
         })
 
-        app.delete('/enrolled/:id', async (req, res) => {
+        app.delete('/selectedClasses/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
-            const result = await enrolledCollection.deleteOne(query);
+            const result = await selectedClassesCollection.deleteOne(query);
             res.send(result);
         })
 
