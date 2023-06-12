@@ -139,11 +139,46 @@ async function run() {
         })
 
         //add a class
+        app.get('/addClass', async (req, res) => {
+            const result = await addClassCollection.find().toArray();
+            res.send(result);
+        })
+
         app.post('/addClass', async (req, res) => {
             const newClass = req.body;
             console.log(newClass);
             const a_Class = await addClassCollection.insertOne(newClass);
             res.send(a_Class);
+        })
+
+        //TODO
+        app.patch('/addClass/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            let updateDoc = {};
+
+            if (req.body.status === 'approved') {
+                updateDoc = {
+                    $set: {
+                        status: 'approved'
+                    },
+                };
+            } else if (req.body.status === 'denied') {
+                updateDoc = {
+                    $set: {
+                        status: 'denied'
+                    },
+                };
+            } else if (req.body.status === 'feedback' && req.body.feedback) {
+                updateDoc = {
+                    $set: {
+                        feedback: req.body.feedback,
+                        status: 'feedback'
+                    },
+                };
+            } else {
+                return res.status(400).json({ error: 'Invalid status or missing feedback' });
+            }
         })
 
         //instructors api
