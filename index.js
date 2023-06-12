@@ -48,6 +48,7 @@ async function run() {
         const classesCollection = client.db("linguaDb").collection("classes");
         const selectedClassesCollection = client.db("linguaDb").collection("selectedClasses");
         const paymentCollection = client.db("linguaDb").collection("payments");
+        const addClassCollection = client.db("linguaDb").collection("addClass");
 
         app.post('/jwt', (req, res) => {
             const user = req.body;
@@ -110,6 +111,21 @@ async function run() {
         })
 
         //instructor
+        app.get('/users/instructor/:email', verifyJWT, async (req, res) => {
+            const email = req.params.email;
+
+            if (req.decoded.email !== email) {
+                res.send({ instructor: false })
+            }
+
+            const query = { email: email }
+            const user = await usersCollection.findOne(query);
+            const result = {
+                instructor: user?.role === 'instructor'
+            }
+            res.send(result);
+        })
+
         app.patch('/users/instructor/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
@@ -120,6 +136,14 @@ async function run() {
             };
             const result = await usersCollection.updateOne(filter, updateDoc);
             res.send(result);
+        })
+
+        //add a class
+        app.post('/addClass', async (req, res) => {
+            const newClass = req.body;
+            console.log(newClass);
+            const a_Class = await addClassCollection.insertOne(newClass);
+            res.send(a_Class);
         })
 
         //instructors api
